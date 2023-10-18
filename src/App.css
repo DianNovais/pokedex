@@ -1,0 +1,5 @@
+.appContainer{
+  background-color: rgb(226, 233, 240);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
