@@ -1,4 +1,4 @@
-import { Flex, Progress, Space } from "antd";
+
 import ProgressBarLine from "../ProgressBarLine/ProgressBarLIne";
 
 type progressType = {
