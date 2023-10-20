@@ -58,10 +58,10 @@ const PokemonsCard: React.FC<PokemonPropsType> = ({ url }) => {
                 style={{
                   width: 180,
                   height: 180,
-                  margin: "auto auto",
+                  margin: "auto",
                 }}
                 alt={data.name}
-                src={data.sprites.other.dream_world.front_default}
+                src={data?.sprites.other.dream_world.front_default ? data?.sprites.other.dream_world.front_default : data.sprites.front_default}
               />
             }
             actions={[
