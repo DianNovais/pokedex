@@ -1,0 +1,10 @@
+.ColdAdjust{
+    margin: 2px auto;
+}
+
+@media screen and (max-width: 460px) {
+    .ColdAdjust{
+      margin: 2px 0px;
+      margin-right: 10px;
+    }
+  }

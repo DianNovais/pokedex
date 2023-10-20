@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { Col, Row } from "antd";
+import { Col, Flex, Pagination, Row } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { Input } from "antd";
@@ -12,26 +12,57 @@ import axios from "axios";
 import Nav from "./components/Nav/Nav";
 import PokemonsCard from "./components/PokemonsCard/PokemonsCard";
 
+//hooks
+import { useEffect, useState } from "react";
+
 const App: React.FC = () => {
+  const [pageInfo, setPageInfo] = useState<number>(1);
+  const [pageSizeInfo, setPageSizeInfo] = useState<number>(10);
+
+ 
+
 
   //interfaces
 
   interface ItemInterface {
-    name: string,
-    url: string
+    name: string;
+    url: string;
   }
 
   //Api call
-  const { data, isLoading } = useQuery("pokemons", async () => {
+  const { data: totalPokemons } = useQuery("pokemons", async () => {
     return axios
-      .get("https://pokeapi.co/api/v2/pokemon?limit=10&offset=0")
+      .get(
+        `https://pokeapi.co/api/v2/pokemon?limit=${pageSizeInfo}&offset=${
+          (pageInfo - 1) * pageSizeInfo
+        }`
+      )
+      .then((response) => response.data.count);
+  });
+
+  const {
+    data: dataPokemons,
+    refetch,
+    isLoading,
+  } = useQuery("pokemonsdata", async () => {
+    return axios
+      .get(
+        `https://pokeapi.co/api/v2/pokemon?limit=${pageSizeInfo}&offset=${
+          (pageInfo - 1) * pageSizeInfo
+        }`
+      )
       .then((response) => response.data.results);
   });
 
-  // const result = data.map(async(item) => {item})
+  useEffect(() => {
+    refetch();
+    console.log(dataPokemons);
+  }, [pageInfo]);
 
   //antd components config
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
+  
 
   const { Search } = Input;
 
@@ -39,13 +70,18 @@ const App: React.FC = () => {
     console.log(value);
   };
 
-
   return (
     <div className="appContainer">
       <Nav></Nav>
 
       {isLoading ? (
-        <Spin indicator={antIcon} />
+        <Flex
+          align="center"
+          justify="center"
+          style={{ width: "100%", height: "80vh" }}
+        >
+          <Spin indicator={antIcon} />
+        </Flex>
       ) : (
         <>
           <Search
@@ -55,20 +91,42 @@ const App: React.FC = () => {
             enterButton
           />
 
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{gap: '5px', justifyContent: 'center'}}>
-            {data.map((item: ItemInterface) => (
-
-              <Col className="gutter-row" span={4} key={item.name}>
+          <Row
+            gutter={[10, 24]}
+            style={{ justifyContent: "center", marginLeft: 0 }}
+          >
+            {dataPokemons.map((item: ItemInterface) => (
+              <Col
+                key={item.name}
+                xs={12}
+                sm={7}
+                md={8}
+                lg={6}
+                xl={4}
+                xxl={3}
+                className="gutter-row"
+                span={2}
+                style={{ padding: "0", width: "200px" }}
+              >
                 <PokemonsCard url={item.url}></PokemonsCard>
               </Col>
-
             ))}
-
-            
           </Row>
+
+          <Flex style={{ margin: "10px 0" }} justify="center" align="center">
+            <Pagination
+              defaultCurrent={1}
+              total={totalPokemons}
+              onChange={(page, pageSize) => {
+                setPageInfo(page);
+                setPageSizeInfo(pageSize);
+              }}
+            />
+          </Flex>
+
+          
         </>
       )}
-
     </div>
   );
 };
