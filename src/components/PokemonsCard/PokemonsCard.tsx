@@ -58,7 +58,6 @@ const PokemonsCard: React.FC<PokemonPropsType> = ({ url }) => {
                 style={{
                   width: 180,
                   height: 180,
-                  objectFit: "cover",
                   margin: "auto auto",
                 }}
                 alt={data.name}
