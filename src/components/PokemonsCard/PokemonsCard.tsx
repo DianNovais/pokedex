@@ -2,7 +2,7 @@ import { EllipsisOutlined } from "@ant-design/icons";
 
 import "./PokemonsCard.css";
 
-import { Avatar, Card, Flex, Modal, Space } from "antd";
+import { Avatar, Card, Space } from "antd";
 
 import React, { useState } from "react";
 
@@ -10,6 +10,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { colorsTypes } from "../../helpers/colorsTypes";
 import ProgressBar from "../ProgressBar/ProgressBar";
+import ModalCustom from "../Modal/ModalCustom";
 
 type PokemonPropsType = {
   url: string;
@@ -92,22 +93,7 @@ const PokemonsCard: React.FC<PokemonPropsType> = ({ url }) => {
               })}
             </Space>
           </Card>
-
-          <Modal title={data && data.name} open={open} onCancel={hideModal}>
-            <Flex vertical align="center" justify="center">
-              <img
-                style={{ width: 200, height: 200 }}
-                alt={data && data.name}
-                src={
-                  data.sprites.versions?.["generation-v"]?.["black-white"]
-                    .animated?.["front_default"]
-                }
-              ></img>
-              <Flex vertical align="left" style={{marginTop: 20, width: '100%'}}>
-                  <ProgressBar height={data?.height} stats={data.stats}></ProgressBar>
-              </Flex>
-            </Flex>
-          </Modal>
+          <ModalCustom data={data} enable={open} hideModal={hideModal}/>
         </>
       )}
     </>

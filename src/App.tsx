@@ -5,22 +5,23 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { Input } from "antd";
 
-import { useQuery } from "react-query";
+
 import axios from "axios";
 
 //components
 import Nav from "./components/Nav/Nav";
 import PokemonsCard from "./components/PokemonsCard/PokemonsCard";
+import ModalCustom from "./components/Modal/ModalCustom";
 
 //hooks
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 
 const App: React.FC = () => {
   const [pageInfo, setPageInfo] = useState<number>(1);
   const [pageSizeInfo, setPageSizeInfo] = useState<number>(10);
-
- 
-
+  const [searchModal, setSearchModal] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   //interfaces
 
@@ -40,6 +41,8 @@ const App: React.FC = () => {
       .then((response) => response.data.count);
   });
 
+
+
   const {
     data: dataPokemons,
     refetch,
@@ -56,25 +59,45 @@ const App: React.FC = () => {
 
   useEffect(() => {
     refetch();
-    console.log(dataPokemons);
   }, [pageInfo]);
+
+
+
+  const [filter, setFilter] = useState<string>();
+
+  const { data: searchQueryData, refetch: searchRefresh, isLoading: searchLoading } = useQuery(
+    ["search", filter],
+    async () => {
+      return axios
+        .get(`https://pokeapi.co/api/v2/pokemon/${filter}`)
+        .then((response) => {
+          return response.data;
+        });
+    },
+    { enabled: Boolean(filter), onSuccess: () => {setSearchModal(true), setError('')}, onError: () => {setError('Não foi encontrado o pokemon')} }
+  );
 
   //antd components config
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-  
-
   const { Search } = Input;
 
-  const onSearch = (value: String) => {
-    console.log(value);
+  const onSearch = (value: string) => {
+    setFilter(value.toLowerCase());
+    if(searchQueryData){
+      searchRefresh();
+    }
   };
+
+  const hideModal = (): void => {
+    setSearchModal(false);
+  }
 
   return (
     <div className="appContainer">
       <Nav></Nav>
 
-      {isLoading ? (
+      {isLoading || searchLoading ? (
         <Flex
           align="center"
           justify="center"
@@ -90,6 +113,7 @@ const App: React.FC = () => {
             style={{ margin: "10px", width: "400px", color: "red" }}
             enterButton
           />
+          {error && <p style={{color: 'red', margin: '10px'}}>{error}</p>}
 
           <Row
             gutter={[10, 24]}
@@ -113,6 +137,15 @@ const App: React.FC = () => {
             ))}
           </Row>
 
+         
+
+          {searchModal && (
+            <>
+              <ModalCustom data={searchQueryData} enable={true} hideModal={hideModal}/>
+            </>
+            
+          )}
+
           <Flex style={{ margin: "10px 0" }} justify="center" align="center">
             <Pagination
               defaultCurrent={1}
@@ -123,8 +156,6 @@ const App: React.FC = () => {
               }}
             />
           </Flex>
-
-          
         </>
       )}
     </div>

@@ -1,7 +1,7 @@
 
 import ProgressBarLine from "../ProgressBarLine/ProgressBarLIne";
 
-type progressType = {
+export type progressType = {
   height: number;
   stats: []
 };
