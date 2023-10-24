@@ -9,7 +9,6 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { colorsTypes } from "../../helpers/colorsTypes";
-import ProgressBar from "../ProgressBar/ProgressBar";
 import ModalCustom from "../Modal/ModalCustom";
 
 type PokemonPropsType = {
